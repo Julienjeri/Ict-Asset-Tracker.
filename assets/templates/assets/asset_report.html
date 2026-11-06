@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Asset Report | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <div class="section-heading report-heading">
+        <div>
+            <h1>Asset Report</h1>
+            <p>{{ total_assets }} asset{{ total_assets|pluralize }} grouped by status.</p>
+        </div>
+        <div class="quick-actions print-hidden">
+            <a class="dashboard-action secondary-action" href="{% url 'asset_list' %}">Back to Assets</a>
+        </div>
+    </div>
+
+    {% for section in status_sections %}
+        <section class="asset-section" aria-labelledby="report-{{ section.value }}">
+            <div class="section-heading">
+                <h2 id="report-{{ section.value }}">{{ section.label }} ({{ section.assets|length }})</h2>
+            </div>
+            {% if section.assets %}
+                <div class="table-wrapper">
+                    <table class="asset-table report-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Asset tag</th>
+                                <th>Serial number</th>
+                                <th>Category</th>
+                                <th>Assigned to</th>
+                                <th>Date issued</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asset in section.assets %}
+                                <tr>
+                                    <td>{{ asset.name }}</td>
+                                    <td>{{ asset.asset_tag }}</td>
+                                    <td>{{ asset.serial_number|default:"-" }}</td>
+                                    <td>{{ asset.get_category_display }}</td>
+                                    <td>{{ asset.assigned_to|default:"-" }}</td>
+                                    <td>{{ asset.date_issued|default:"-" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">No assets {{ section.label|lower }}.</p>
+            {% endif %}
+        </section>
+    {% endfor %}
+{% endblock %}

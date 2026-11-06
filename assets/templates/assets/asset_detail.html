@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ asset.name }} | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <h1>{{ asset.name }}</h1>
+    <dl class="asset-details">
+        <dt>Record ID</dt>
+        <dd>{{ asset.pk }}</dd>
+        <dt>Asset tag</dt>
+        <dd>{{ asset.asset_tag }}</dd>
+        <dt>Serial number</dt>
+        <dd>{{ asset.serial_number|default:"-" }}</dd>
+        <dt>Category</dt>
+        <dd>{{ asset.get_category_display }}</dd>
+        <dt>Status</dt>
+        <dd><span class="status-badge status-{{ asset.status }}">{{ asset.get_status_display }}</span></dd>
+        <dt>Assigned to</dt>
+        <dd>{{ asset.assigned_to|default:"-" }}</dd>
+        <dt>Date issued</dt>
+        <dd>{{ asset.date_issued|default:"-" }}</dd>
+        <dt>Notes</dt>
+        <dd>{{ asset.notes|default:"-"|linebreaksbr }}</dd>
+        <dt>Created</dt>
+        <dd>{{ asset.created_at }}</dd>
+    </dl>
+    <section class="recent-assets" aria-labelledby="asset-history-heading">
+        <div class="section-heading">
+            <h2 id="asset-history-heading">Assignment and status history</h2>
+        </div>
+        {% if history_entries %}
+            <div class="table-wrapper">
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Changed</th>
+                            <th>Old value</th>
+                            <th>New value</th>
+                            <th>Changed by</th>
+                            <th>Date and time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in history_entries %}
+                            <tr>
+                                <td>{{ entry.get_field_changed_display }}</td>
+                                <td>{{ entry.old_value|default:"-" }}</td>
+                                <td>{{ entry.new_value|default:"-" }}</td>
+                                <td>{{ entry.changed_by|default:"Unknown user" }}</td>
+                                <td>{{ entry.changed_at }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="empty-state">No status or assignment changes have been recorded for this asset.</p>
+        {% endif %}
+    </section>
+    <div class="quick-actions">
+        <a class="dashboard-action" href="{% url 'asset_update' asset.pk %}">Edit Asset</a>
+        <a class="dashboard-action secondary-action" href="{% url 'dashboard' %}">Back to Dashboard</a>
+    </div>
+{% endblock %}

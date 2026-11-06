@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <h1>{{ page_title }}</h1>
+    <form class="data-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{{ submit_label }}</button>
+        <a href="{% url 'dashboard' %}">Cancel</a>
+    </form>
+{% endblock %}

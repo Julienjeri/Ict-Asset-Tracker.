@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ICT Asset Tracker{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Main navigation">
+            <a class="brand" href="{% url 'dashboard' %}">ICT Asset Tracker</a>
+            <div class="nav-links">
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+                    <a href="{% url 'asset_list' %}"{% if request.resolver_match.url_name == 'asset_list' or request.resolver_match.url_name == 'asset_detail' or request.resolver_match.url_name == 'asset_update' or request.resolver_match.url_name == 'asset_delete' or request.resolver_match.url_name == 'asset_status_update' %} class="active" aria-current="page"{% endif %}>Assets</a>
+                    <a href="{% url 'asset_create' %}"{% if request.resolver_match.url_name == 'asset_create' %} class="active" aria-current="page"{% endif %}>Add Asset</a>
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}"{% if request.resolver_match.url_name == 'login' %} class="active" aria-current="page"{% endif %}>Log in</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="message message-{{ message.tags }}"{% if "error" in message.tags %} role="alert"{% else %} role="status"{% endif %}>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>Created by <a href="mailto:julienjeri2030@gmail.com">julienjeri2030@gmail.com</a> &copy; {% now "Y" %}</p>
+    </footer>
+</body>
+</html>

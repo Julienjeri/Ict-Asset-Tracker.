@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <div class="dashboard-heading">
+        <div>
+            <h1>Asset Dashboard</h1>
+            <p>Welcome, {{ request.user.username }}. Manage your organization's tracked equipment.</p>
+        </div>
+    </div>
+
+    <section class="quick-actions" aria-labelledby="quick-actions-heading">
+        <h2 id="quick-actions-heading">Quick actions</h2>
+        <a class="dashboard-action" href="#add-asset">Add New Asset</a>
+        <a class="dashboard-action secondary-action" href="{% url 'asset_list' %}">View All Assets</a>
+    </section>
+
+    <form class="asset-filters" method="get" action="{% url 'dashboard' %}">
+        <div class="filter-field">
+            <label for="q">Search assets</label>
+            <input type="search" id="q" name="q" value="{{ search_query }}" placeholder="Name, asset tag, or person">
+        </div>
+        <div class="filter-field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All categories</option>
+                {% for value, label in category_choices %}
+                    <option value="{{ value }}"{% if selected_category == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit">Search and filter</button>
+        {% if search_query or selected_category %}
+            <a href="{% url 'dashboard' %}">Clear filters</a>
+        {% endif %}
+    </form>
+
+    <section class="status-grid" aria-label="Asset totals">
+        <a class="status-card status-card-link status-total" href="#asset-status-sections">
+            <h2>Total assets</h2>
+            <p class="status-count">{{ total_assets }}</p>
+            <span>Jump to asset sections</span>
+        </a>
+        {% for status in status_totals %}
+            <a class="status-card status-card-link status-{{ status.value }}" href="#status-{{ status.value }}">
+                <h2>{{ status.label }}</h2>
+                <p class="status-count">{{ status.count }}</p>
+                <span>Jump to {{ status.label|lower }} assets</span>
+            </a>
+        {% endfor %}
+    </section>
+
+    <div id="asset-status-sections">
+        {% for status in status_totals %}
+            <section class="asset-section" id="status-{{ status.value }}" aria-labelledby="heading-{{ status.value }}">
+                <div class="section-heading">
+                    <h2 id="heading-{{ status.value }}">{{ status.label }} ({{ status.count }})</h2>
+                </div>
+                {% if status.assets %}
+                    <div class="table-wrapper">
+                        <table class="asset-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Asset tag</th>
+                                    <th>Category</th>
+                                    <th>Assigned to</th>
+                                    <th>Date issued</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asset in status.assets %}
+                                    <tr>
+                                        <td>{{ asset.name }}</td>
+                                        <td>{{ asset.asset_tag }}</td>
+                                        <td>{{ asset.get_category_display }}</td>
+                                        <td>{{ asset.assigned_to|default:"-" }}</td>
+                                        <td>{{ asset.date_issued|default:"-" }}</td>
+                                        <td>
+                                            <div class="asset-actions">
+                                                <a class="small-action" href="{% url 'asset_detail' asset.pk %}">View</a>
+                                                <a class="small-action" href="{% url 'asset_update' asset.pk %}">Edit</a>
+                                                <a class="small-action delete-action" href="{% url 'asset_delete' asset.pk %}">Delete</a>
+                                                <form class="status-update-form" method="post" action="{% url 'asset_status_update' asset.pk %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                                    <label class="visually-hidden" for="status-{{ asset.pk }}">Change status for {{ asset.name }}</label>
+                                                    <select id="status-{{ asset.pk }}" name="status">
+                                                        {% for value, label in status_choices %}
+                                                            <option value="{{ value }}"{% if asset.status == value %} selected{% endif %}>{{ label }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="submit">Update</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state">
+                        {% if status.value == "available" %}
+                            No assets available.
+                        {% elif status.value == "in_use" %}
+                            No assets in use.
+                        {% elif status.value == "repair" %}
+                            No assets under repair.
+                        {% else %}
+                            No assets retired.
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </section>
+        {% endfor %}
+    </div>
+
+    <section class="recent-assets" aria-labelledby="recent-assets-heading">
+        <div class="section-heading">
+            <h2 id="recent-assets-heading">Recently added assets</h2>
+            <a href="{% url 'asset_list' %}">View all assets</a>
+        </div>
+        {% if recent_assets %}
+            <div class="table-wrapper">
+                <table class="asset-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Asset tag</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Assigned to</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asset in recent_assets %}
+                            <tr>
+                                <td>{{ asset.name }}</td>
+                                <td>{{ asset.asset_tag }}</td>
+                                <td>{{ asset.get_category_display }}</td>
+                                <td><span class="status-badge status-{{ asset.status }}">{{ asset.get_status_display }}</span></td>
+                                <td>{{ asset.assigned_to|default:"-" }}</td>
+                                <td>
+                                    <div class="asset-actions">
+                                        <a class="small-action" href="{% url 'asset_detail' asset.pk %}">View</a>
+                                        <a class="small-action" href="{% url 'asset_update' asset.pk %}">Edit</a>
+                                        <a class="small-action delete-action" href="{% url 'asset_delete' asset.pk %}">Delete</a>
+                                        <form class="status-update-form" method="post" action="{% url 'asset_status_update' asset.pk %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                            <label class="visually-hidden" for="recent-status-{{ asset.pk }}">Change status for {{ asset.name }}</label>
+                                            <select id="recent-status-{{ asset.pk }}" name="status">
+                                                {% for value, label in status_choices %}
+                                                    <option value="{{ value }}"{% if asset.status == value %} selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit">Update</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No assets match your current filters.</p>
+        {% endif %}
+    </section>
+
+    <section class="add-asset-section" id="add-asset" aria-labelledby="add-asset-heading">
+        <h2 id="add-asset-heading">Add New Asset</h2>
+        <p>Enter the asset details below. The asset will appear in the matching status section after saving.</p>
+        <form class="data-form asset-create-form" method="post" action="{% url 'dashboard' %}">
+            {% csrf_token %}
+            {{ asset_form.as_p }}
+            <button type="submit">Save Asset</button>
+        </form>
+    </section>
+{% endblock %}

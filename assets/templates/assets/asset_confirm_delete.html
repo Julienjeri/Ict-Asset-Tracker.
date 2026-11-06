@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ asset.name }} | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <h1>Delete Asset</h1>
+    <section class="confirm-card">
+        <p>Are you sure? You are about to delete <strong>{{ asset.name }}</strong> ({{ asset.asset_tag }}).</p>
+        <form method="post">
+            {% csrf_token %}
+            <button class="delete-button" type="submit">Yes, delete asset</button>
+            <a class="dashboard-action secondary-action" href="{% url 'dashboard' %}">Cancel</a>
+        </form>
+    </section>
+{% endblock %}

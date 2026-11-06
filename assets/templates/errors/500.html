@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <section class="empty-state error-page">
+        <h1>Something went wrong</h1>
+        <p>The server could not complete your request. Please try again later.</p>
+        <a class="dashboard-action" href="{% url 'dashboard' %}">Back to dashboard</a>
+    </section>
+{% endblock %}

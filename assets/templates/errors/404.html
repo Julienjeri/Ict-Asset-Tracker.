@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | ICT Asset Tracker{% endblock %}
+
+{% block content %}
+    <section class="empty-state error-page">
+        <h1>Page not found</h1>
+        <p>The page you requested could not be found.</p>
+        <a class="dashboard-action" href="{% url 'dashboard' %}">Back to dashboard</a>
+    </section>
+{% endblock %}

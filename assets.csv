@@ -1,0 +1,16 @@
+name,asset_tag,serial_number,category,status,assigned_to,date_issued,notes
+Dell Latitude 5420,SAMPLE-001,DL5420A001,laptop,in_use,Finance Officer,2026-01-12,Issued with charger and bag
+HP ProBook 450,SAMPLE-002,HP450B002,laptop,in_use,Records Clerk,2026-02-03,Battery replaced once
+Lenovo ThinkPad E14,SAMPLE-003,LT14C003,laptop,available,,,New stock in storeroom
+HP EliteBook 840,SAMPLE-004,HP840D004,laptop,repair,Procurement Officer,2025-09-20,Screen cracked and sent for repair
+Dell OptiPlex 3080,SAMPLE-005,DO3080E005,desktop,in_use,Reception,2025-06-15,Front desk computer
+HP ProDesk 400,SAMPLE-006,HP400F006,desktop,in_use,Accounts Office,2025-07-01,
+Dell OptiPlex 7010,SAMPLE-007,DO7010G007,desktop,retired,,2019-03-10,Too old and no longer supported
+HP LaserJet Pro M404,SAMPLE-008,LJ404H008,printer,in_use,Admin Office,2025-04-18,Shared printer
+Canon imageRUNNER 2206,SAMPLE-009,CN2206I009,printer,repair,Records Room,2024-11-05,Paper jam fault and waiting for spare part
+Epson L3250,SAMPLE-010,EP3250J010,printer,available,,,Spare printer
+TP-Link Archer C6,SAMPLE-011,TL-C6K011,router,in_use,Server Room,2025-08-22,Office Wi-Fi router
+Cisco SG350 Switch,SAMPLE-012,CS350L012,router,in_use,Server Room,2024-05-30,24-port network switch
+MikroTik hAP ac2,SAMPLE-013,MK-AC2M013,router,available,,,Kept as backup
+Samsung Galaxy Tab A8,SAMPLE-014,SG-A8N014,phone,in_use,Field Officer,2026-03-09,Used for data collection
+Epson EB-X06 Projector,SAMPLE-015,EP-X06O015,other,available,,,Used in the boardroom
